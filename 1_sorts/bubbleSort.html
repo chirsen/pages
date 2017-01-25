@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>冒泡排序</title>
+    <style>
+        body{
+            width: 100%;
+            padding: 0px;
+            position: relative;
+            text-align: center;
+            font:14px/22px ‘Helvetica Neue’,Helvetica,Arial,Sans-serif;
+        }
+        .css{
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            height: 300px;
+            width: 700px;
+            margin: 0px auto;
+            background-color: #eee;
+        }
+        .unit{
+            display: flex;
+            flex-grow: 1;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-end;
+        }
+        .bar{
+            font-size: 12px;
+            line-height: 12px;
+            height: 250px;
+            display: flex;
+            width: 50%;
+            background-color: #007ACC;
+            color: white;
+            text-align: center;
+        }
+        .canvas{
+            height: 300px;
+            width: 700px;
+            margin: 20px auto;
+            background-color: #eee;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>排序之--冒泡</h1>
+    <div class="css">
+        <div class="unit">
+            <div class="bar"></div>
+        </div>
+        <div class="unit">
+            <div class="bar"></div>
+        </div>
+        <div class="unit">
+            <div class="bar"></div>
+        </div>
+        <div class="unit">
+            <div class="bar"></div>
+        </div>
+        <div class="unit">
+            <div class="bar"></div>
+        </div>
+        <div class="unit">
+            <div class="bar"></div>
+        </div>
+        <div class="unit">
+            <div class="bar"></div>
+        </div>
+        <div class="unit">
+            <div class="bar"></div>
+        </div>
+        <div class="unit">
+            <div class="bar"></div>
+        </div>
+        <div class="unit">
+            <div class="bar"></div>
+        </div>
+        <div class="unit">
+            <div class="bar"></div>
+        </div>
+        <div class="unit">
+            <div class="bar"></div>
+        </div>
+        <div class="unit">
+            <div class="bar"></div>
+        </div>
+        <div class="unit">
+            <div class="bar"></div>
+        </div>
+        <div class="unit">
+            <div class="bar"></div>
+        </div>
+    </div>
+    <div class="canvas">
+        <canvas id="cvs" width="700px" height="300px"></canvas>
+    </div>
+
+    <script>
+        /*canvas实现*/
+        var arr = [2, 44, 5, 3, 47, 15, 36, 26, 27, 46, 4, 19, 50, 38, 48];
+        var tempArr = [].concat(arr);
+        var cvs = document.getElementById("cvs");
+        var ctx = cvs.getContext("2d");
+        var len = arr.length;
+        var width = cvs.width;
+        var height = cvs.height;
+        var unitWidth = width / len;
+        var max = Math.max.apply(Math, arr) * 1.2;
+        var p1 = [];
+        var timeSpace = 40;
+
+        //第一次全部绘制为蓝色
+        for (let i = 1; i < arr.length; i++) {
+            p1.push(drawSingleBar(0, i, "#007ACC"));
+        }
+        Promise.all(p1);
+
+        var p2 = drawSingleBar(0, 0, "#0D8000");
+        for (let j = len; j >= 1; j--) {
+            for (let i = 1; i < j; i++) {
+                //注意，此处i和j的let，如果不用let，需要使用function作用域
+                p2 = p2.then((value) => {
+                    //在进行比较的两个柱体变色
+                    return drawSingleBar(timeSpace, i, "#0D8000").then(value => {
+                        if (i > 1) {
+                            return drawSingleBar(0, i - 2, "#007ACC").then(value => {
+                                return drawSingleBar(timeSpace, i - 1, "#0D8000");
+                            });
+                        }
+                        return drawSingleBar(timeSpace, i - 1, "#0D8000");
+                    });
+                }).then(value => {
+                    //如果出现可以交换,进行交换
+                    if (arr[i] < arr[i - 1]) {
+                        [arr[i], arr[i - 1]] = [arr[i - 1], arr[i]];
+                        return drawSingleBar(timeSpace, i, "#0D8000").then(value => {
+                            return drawSingleBar(timeSpace, i - 1, "#0D8000");
+                        });
+                    }
+                });
+            }
+
+            p2 = p2.then(value => {
+                if (j >= 2) {//已经排好序的改变颜色
+                    return drawSingleBar(timeSpace, j - 1, "#FDA800").then(value => {
+                        return drawSingleBar(0, j - 2, "#007ACC");
+                    });
+                } else {
+                    return drawSingleBar(timeSpace, j - 1, "#FDA800");
+                }
+            });
+        }
+
+
+        function drawSingleBar(long, i, color) {
+            return new Promise(function (resolve, reject) {
+                setTimeout(function () {
+                    ctx.save();
+                    ctx.clearRect(unitWidth * i + unitWidth / 4 - 1, 0, unitWidth / 2 + 2, height);
+                    ctx.fillStyle = color;
+                    ctx.fillRect(unitWidth * i + unitWidth / 4, (max - arr[i]) / max * height, unitWidth / 2, arr[i] / max * height);
+                    ctx.fillStyle = "#ffffff";
+                    ctx.textAlign = "center";
+                    ctx.fillText(arr[i], unitWidth * i + unitWidth / 2, (max - arr[i]) / max * height + 10);
+                    ctx.restore();
+                    resolve(arr[i]);
+                }, long);
+            });
+        }
+
+        /*css实现*/
+        var bars = document.querySelectorAll(".bar");
+        var units = document.querySelectorAll(".unit");
+        var orders = [];
+        arr.map((value, index) => {
+            bars[index].style.height = height * arr[index] / max + "px";
+            units[index].style.order = index;
+            bars[index].innerHTML = value;
+            orders[index] = index;
+        });
+        var p3 = wrep(1, timeSpace);
+        for (let i = len - 1; i >= 0; i--) {
+            for (let j = 1; j <= i; j++) {
+                p3 = p3.then(resolve => {
+                    if (j >= 2) {
+                        bars[orders[j - 2]].style.backgroundColor = "#007ACC";
+                    }
+                    return wrep(j, timeSpace);
+                });
+            }
+            p3 = p3.then(resolve => {
+                return new Promise((resolve, reject) => {
+                    bars[orders[i]].style.backgroundColor = "#FDA800";
+                    resolve();
+                });
+            });
+        }
+
+        function wrep(j, long) {
+            return new Promise((resolve, reject) => {
+                bars[orders[j]].style.backgroundColor = "#0D8000";
+                bars[orders[j - 1]].style.backgroundColor = "#0D8000";
+                setTimeout(function () {
+                    if (tempArr[j] < tempArr[j - 1]) {
+                        //交换值
+                        [tempArr[j], tempArr[j - 1]] = [tempArr[j - 1], tempArr[j]];
+                        //交换order
+                        units[orders[j]].style.order = j - 1;
+                        units[orders[j - 1]].style.order = j;
+                        //交换元素
+                        [orders[j], orders[j - 1]] = [orders[j - 1], orders[j]];
+                    }
+                    resolve();
+                }, long);
+            });
+        }
+    </script>
+</body>
+
+</html>
