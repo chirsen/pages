@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>选择排序</title>
+    <style>
+        body{
+            width: 100%;
+            padding: 0px;
+            position: relative;
+            text-align: center;
+            font:14px/22px ‘Helvetica Neue’,Helvetica,Arial,Sans-serif;
+        }
+        .css{
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            height: 300px;
+            width: 700px;
+            margin: 0px auto;
+            background-color: #eee;
+        }
+        .unit{
+            display: flex;
+            flex-grow: 1;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-end;
+        }
+        .bar{
+            font-size: 12px;
+            line-height: 12px;
+            height: 250px;
+            display: flex;
+            width: 50%;
+            background-color: #007ACC;
+            color: white;
+            text-align: center;
+        }
+        .canvas{
+            height: 300px;
+            width: 700px;
+            margin: 20px auto;
+            background-color: #eee;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>排序之--选择排序</h1>
+    <div class="css" id="css">
+
+    </div>
+    <div class="canvas">
+        <canvas id="cvs" width="700px" height="300px"></canvas>
+    </div>
+    <script>
+        var arr = [2, 44, 5, 3, 47, 15, 36, 26, 27, 46, 4, 19, 50, 38, 48];
+        var cssEl = document.getElementById("css");
+        var canvasEl = document.getElementById("cvs");
+        var ctx = canvasEl.getContext('2d');
+        var height = canvasEl.height;
+        var width = canvasEl.width;
+        var max = Math.max.apply(Math, arr) * 1.2;
+        var green = "#0D8000";
+        var blue = "#007ACC";
+        var yellow = "#FDA800";
+        var red = "#D82D3F";
+
+        var orders = [];
+        var units = [];
+        //初始状态
+        for (let i = 0, len = arr.length; i < len; i++) {
+            let unit = document.createElement("div");
+            unit.className = "unit";
+            unit.style.order = i;
+            let bar = document.createElement("div");
+            bar.className = "bar";
+            bar.style.height = height * (arr[i] / max) + "px";
+            bar.innerHTML = arr[i];
+            unit.appendChild(bar);
+            cssEl.appendChild(unit);
+            orders[i] = i;
+            units.push(unit);
+        }
+        //开始排序
+
+        for (let i = 0, len = arr.length; i < len; i++) {
+            //确定需要改变的柱体
+            units[orders[i]].children[0].style.backgroundColor = red;
+            var temp = i;
+            for (let j = i + 1; j < len; j++) {
+                units[orders[j]].children[0].style.backgroundColor = green;
+                if (arr[j] < arr[temp]) {
+                    units[orders[temp]].children[0].style.backgroundColor = blue;
+                    units[orders[j]].children[0].style.backgroundColor = red;
+                    temp = j;
+                } else {
+                    units[orders[j]].children[0].style.backgroundColor = blue;
+                }
+            }
+            //交换
+            units[orders[i]].style.order = temp;
+            units[orders[temp]].style.order = i;
+            units[orders[temp]].children[0].style.backgroundColor = yellow;
+            [orders[i], orders[temp]] = [orders[temp], orders[i]];
+            [arr[temp], arr[i]] = [arr[i], arr[temp]];
+        }
+
+
+    </script>
+</body>
+
+</html>
