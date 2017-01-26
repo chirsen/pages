@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>冒泡排序</title>
+    <title>冒泡排序(尝试版)</title>
     <style>
         body{
             width: 100%;
@@ -112,7 +112,7 @@
         var unitWidth = width / len;
         var max = Math.max.apply(Math, arr) * 1.2;
         var p1 = [];
-        var timeSpace = 40;
+        var timeSpace = 100;
 
         //第一次全部绘制为蓝色
         for (let i = 1; i < arr.length; i++) {
@@ -195,7 +195,8 @@
             }
             p3 = p3.then(resolve => {
                 return new Promise((resolve, reject) => {
-                    bars[orders[i - 1]].style.backgroundColor = "#007ACC";
+                    if (i !== 0)
+                        bars[orders[i - 1]].style.backgroundColor = "#007ACC";
                     bars[orders[i]].style.backgroundColor = "#FDA800";
                     resolve();
                 });
